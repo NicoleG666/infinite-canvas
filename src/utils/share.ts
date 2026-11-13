@@ -114,8 +114,19 @@ export function readShareTokenFromLocation(): string | null {
   return hash.slice('#share='.length)
 }
 
+// 线上站点地址：本地开发时生成的分享链接也指向它，避免发出只能在本机打开的 localhost 链接
+const PUBLIC_ORIGIN = 'https://37jg3fszh5ayb212c06.traesite.cn'
+const LOCAL_HOST = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+)$/
+
+// 当前是否在本地/内网环境打开
+export function isLocalShareOrigin(): boolean {
+  return LOCAL_HOST.test(window.location.hostname)
+}
+
 export function buildShareUrl(token: string): string {
-  return `${window.location.origin}${window.location.pathname}#share=${token}`
+  const origin = isLocalShareOrigin() ? PUBLIC_ORIGIN : window.location.origin
+  // 固定指向画布页，避免在根路径（介绍页）里生成分享链接
+  return `${origin}/app.html#share=${token}`
 }
 
 /* ---------------- 分享卡片（Canvas 2D） ---------------- */

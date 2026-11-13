@@ -9,6 +9,7 @@ import {
   createSharePayload,
   downloadCardImage,
   encodeShareToken,
+  isLocalShareOrigin,
   renderShareCard,
 } from '../utils/share'
 
@@ -243,10 +244,8 @@ export default function TopBar({
 
   const shareTitle = current?.name ?? '未命名画布'
   const shareText = `${profile?.nickname ?? '画布用户'} 在「无限画布」分享了「${shareTitle}」`
-  // 本地开发地址的链接只能在当前电脑打开，界面上如实提示
-  const shareLocalOnly = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(
-    window.location.hostname,
-  )
+  // 本地开发时链接会自动指向线上站点，这里只做说明，不再提示「只能本机打开」
+  const shareLocalOnly = isLocalShareOrigin()
   // QQ 官方分享页：用 <a target="_blank"> 打开，比 window.open 更不容易被拦截
   const qqShareUrl = shareUrl
     ? `https://connect.qq.com/widget/shareqq/index.html?url=${encodeURIComponent(
@@ -754,7 +753,7 @@ export default function TopBar({
               {shareNote && <div className="share-note">{shareNote}</div>}
               {shareLocalOnly && (
                 <div className="share-warn">
-                  当前是本地地址，链接只能在本机打开；部署到线上后即可直接发给好友。
+                  当前在本地开发：分享链接已自动指向线上站点，微信 / QQ 可直接发给好友。
                 </div>
               )}
               {shareUrl.length > 8000 && (
