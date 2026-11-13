@@ -2,9 +2,9 @@
 
 一个**本地优先**的无限画布笔记工具：把文字、图片、视频、音频、链接和代码放到一块可以无限平移、缩放的画布上，用连线和分组理清关系。无需注册，打开即用，数据保存在你自己的浏览器里。
 
-[**在线体验**](https://37jg3fszh5ayb212c06.traesite.cn) · [**GitHub 仓库**](https://github.com/NicoleG666/infinite-canvas) · [本地运行](#本地运行) · [数据存在哪里](#数据存在哪里)
+[**在线体验**](https://37jg3fszh5ayb212c06.traesite.cn) · [**产品介绍**](https://37jg3fszh5ayb212c06.traesite.cn/demo.html) · [**GitHub 仓库**](https://github.com/NicoleG666/infinite-canvas) · [本地运行](#本地运行) · [数据存在哪里](#数据存在哪里)
 
-![无限画布界面截图](docs/screenshot.png)
+![无限画布界面截图](public/screenshot.png)
 
 ## 核心功能
 
@@ -23,6 +23,8 @@
 <https://37jg3fszh5ayb212c06.traesite.cn>
 
 打开后会自动创建一块空白画布，点击底部中间的 **+** 添加节点即可开始。
+
+如果你想先看「这个工具是干什么的」，可以打开[产品介绍页](https://37jg3fszh5ayb212c06.traesite.cn/demo.html)，那里用一屏把核心用法、节点类型和数据存放位置讲清楚。
 
 ## 本地运行
 
@@ -60,4 +62,4 @@ React 18 · TypeScript · Vite · Zustand · Konva / react-konva · IndexedDB（
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2026 知鹿

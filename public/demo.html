@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>无限画布 Infinite Canvas · 产品介绍</title>
+<meta name="description" content="无限画布是一个本地优先的无限画布笔记工具：文字、图片、视频、音频、链接、代码都能放上去，用连线与分组理清关系，数据存在你自己的浏览器里。" />
+<style>
+  :root {
+    --ink-0: #06070a;
+    --ink-1: #0a0c11;
+    --ink-2: #11141a;
+    --ink-3: #171b23;
+    --line: rgba(255, 255, 255, 0.085);
+    --line-strong: rgba(255, 255, 255, 0.16);
+    --text-1: #e8eef6;
+    --text-2: #96a2b4;
+    --text-3: #5d6878;
+    --cyan: #58d8ff;
+    --cyan-soft: rgba(88, 216, 255, 0.32);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink-0);
+    color: var(--text-1);
+    font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+    background-size: 26px 26px;
+    background-position: center top;
+  }
+
+  /* 顶部弥散光 */
+  .glow {
+    position: fixed;
+    inset: -30% 0 auto 0;
+    height: 720px;
+    pointer-events: none;
+    background:
+      radial-gradient(46% 52% at 50% 18%, rgba(88, 216, 255, 0.16), transparent 70%),
+      radial-gradient(38% 44% at 18% 0%, rgba(47, 111, 228, 0.16), transparent 72%);
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px 72px;
+  }
+
+  /* 顶栏 */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .brand img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-links a {
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    transition: color 0.18s ease, background 0.18s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--text-1);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* 首屏 */
+  .hero {
+    padding: 56px 0 34px;
+    text-align: center;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-2);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .tag .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan-soft);
+  }
+
+  h1 {
+    margin: 22px 0 0;
+    font-size: clamp(34px, 6vw, 56px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    background: linear-gradient(180deg, #ffffff 10%, #9fb4c9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lede {
+    margin: 18px auto 0;
+    max-width: 640px;
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--text-2);
+  }
+
+  .cta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+
+  .btn-primary {
+    color: #04202b;
+    background: linear-gradient(180deg, #8ee8ff, var(--cyan));
+    box-shadow: 0 10px 30px -12px rgba(88, 216, 255, 0.8);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 34px -12px rgba(88, 216, 255, 0.95);
+  }
+
+  .btn-ghost {
+    color: var(--text-1);
+    border-color: var(--line-strong);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+  }
+
+  /* 截图 */
+  .shot {
+    margin-top: 44px;
+    border: 1px solid var(--line-strong);
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--ink-2);
+    box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  }
+
+  .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* 通用区块 */
+  section { margin-top: 76px; }
+
+  .eyebrow {
+    color: var(--cyan);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+    font-weight: 650;
+  }
+
+  .sub {
+    margin: 10px 0 0;
+    color: var(--text-2);
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 680px;
+  }
+
+  /* 四步 */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 26px;
+  }
+
+  .step {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(23, 27, 35, 0.9), rgba(10, 12, 17, 0.9));
+  }
+
+  .step .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--cyan-soft);
+    color: var(--cyan);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .step h3 {
+    margin: 12px 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .step p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+
+  /* 节点类型 */
+  .types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 26px;
+  }
+
+  .type {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.022);
+  }
+
+  .type .ico {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    border: 1px solid var(--line-strong);
+    background: rgba(88, 216, 255, 0.08);
+    color: var(--cyan);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .type h3 {
+    margin: 2px 0 4px;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .type p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+
+  /* 特性 */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 26px;
+  }
+
+  .feature {
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(23, 27, 35, 0.7), rgba(10, 12, 17, 0.7));
+  }
+
+  .feature h3 {
+    margin: 0 0 8px;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .feature p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  /* 数据说明 */
+  .note {
+    margin-top: 26px;
+    padding: 22px 24px;
+    border: 1px solid rgba(88, 216, 255, 0.22);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(88, 216, 255, 0.07), rgba(88, 216, 255, 0.015));
+  }
+
+  .note h3 {
+    margin: 0 0 10px;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .note ul {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-2);
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
+  .note strong { color: var(--text-1); font-weight: 600; }
+
+  /* 页脚 */
+  footer {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-3);
+    font-size: 12.5px;
+  }
+
+  footer a {
+    color: var(--text-2);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--cyan); }
+
+  @media (max-width: 860px) {
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .types { grid-template-columns: repeat(2, 1fr); }
+    .features { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    .hero { padding-top: 36px; }
+    .steps, .types { grid-template-columns: 1fr; }
+    section { margin-top: 56px; }
+  }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<div class="page">
+  <nav class="nav">
+    <div class="brand">
+      <img src="./logo-infinity.png" alt="" />
+      <span>无限画布</span>
+    </div>
+    <div class="nav-links">
+      <a href="https://github.com/NicoleG666/infinite-canvas" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="./index.html">进入画布 →</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="tag"><span class="dot"></span>本地优先 · 无需注册 · 打开即用</span>
+    <h1>把想法摊开在一张<br />无限的画布上</h1>
+    <p class="lede">
+      无限画布是一个在浏览器里运行的笔记工具。文字、图片、视频、音频、链接和代码都可以变成画布上的卡片，
+      拖一条连线就能说明它们之间的关系，框一个分组就能收起一整个主题。所有数据只保存在你自己的浏览器里。
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="./index.html">立即体验</a>
+      <a class="btn btn-ghost" href="https://github.com/NicoleG666/infinite-canvas" target="_blank" rel="noreferrer">查看源码</a>
+    </div>
+
+    <div class="shot">
+      <img src="./screenshot.png" alt="无限画布界面截图：节点卡片、连线与分组" />
+    </div>
+  </header>
+
+  <section>
+    <p class="eyebrow">How it works</p>
+    <h2>四步就能上手</h2>
+    <p class="sub">没有工具栏层级，也没有复杂的设置。所有操作都发生在画布本身。</p>
+
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span>
+        <h3>双击空白处</h3>
+        <p>在画布任意位置双击，弹出新建菜单。</p>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <h3>放一张卡片</h3>
+        <p>选文本、图片、视频、音频、链接或代码块。</p>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <h3>拖出连线</h3>
+        <p>鼠标靠近卡片会出现磁吸加号，拖出即可连接。</p>
+      </div>
+      <div class="step">
+        <span class="num">4</span>
+        <h3>一键整理</h3>
+        <p>按连线关系自动排成从左到右的结构并居中。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Node types</p>
+    <h2>六类节点，覆盖日常素材</h2>
+    <p class="sub">媒体按真实宽高比展示，代码块可以直接在沙箱里运行。</p>
+
+    <div class="types">
+      <div class="type">
+        <span class="ico">T</span>
+        <div>
+          <h3>文本</h3>
+          <p>灵感、待办、段落，双击即可编辑。</p>
+        </div>
+      </div>
+      <div class="type">
+        <span class="ico">▣</span>
+        <div>
+          <h3>图片</h3>
+          <p>拖入本地图片，按原比例贴在画布上。</p>
+        </div>
+      </div>
+      <div class="type">
+        <span class="ico">▶</span>
+        <div>
+          <h3>视频</h3>
+          <p>本地视频节点，直接在画布内播放。</p>
+        </div>
+      </div>
+      <div class="type">
+        <span class="ico">♪</span>
+        <div>
+          <h3>音频</h3>
+          <p>律动波形 + 液态玻璃播放条。</p>
+        </div>
+      </div>
+      <div class="type">
+        <span class="ico">↗</span>
+        <div>
+          <h3>链接</h3>
+          <p>收藏网页地址，一键跳转外部页面。</p>
+        </div>
+      </div>
+      <div class="type">
+        <span class="ico">{ }</span>
+        <div>
+          <h3>代码块</h3>
+          <p>语法高亮，JS / HTML 可在沙箱内运行。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Why it feels different</p>
+    <h2>为「一个人长期用」设计</h2>
+    <p class="sub">不追求协作与云端，先把不丢数据、不卡、不折腾这三件事做好。</p>
+
+    <div class="features">
+      <div class="feature">
+        <h3>数据留在本地</h3>
+        <p>画布、资产与媒体文件都写入浏览器 IndexedDB，不经过任何服务器，也不需要账号。</p>
+      </div>
+      <div class="feature">
+        <h3>删除可恢复</h3>
+        <p>删除的内容进入回收站保留 30 天，误删还能找回来。</p>
+      </div>
+      <div class="feature">
+        <h3>多标签页不打架</h3>
+        <p>同一画布在多个标签页编辑时，后写入的一方会被提示冲突，不会静默覆盖。</p>
+      </div>
+      <div class="feature">
+        <h3>备份能进能出</h3>
+        <p>一键导出全部画布为 JSON，换设备时再导入，形成完整闭环。</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <h3>关于数据：你需要知道的两件事</h3>
+      <ul>
+        <li>画布数据保存在<strong>当前浏览器</strong>，换设备、换浏览器或清理浏览器数据后不会自动出现。</li>
+        <li>JSON 备份包含<strong>画布结构与文本</strong>，不包含图片 / 视频 / 音频文件本身。</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 知鹿 · MIT License</span>
+    <span>
+      <a href="./index.html">进入画布</a> ·
+      <a href="https://github.com/NicoleG666/infinite-canvas" target="_blank" rel="noreferrer">GitHub 仓库</a>
+    </span>
+  </footer>
+</div>
+</body>
+</html>
