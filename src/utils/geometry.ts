@@ -299,6 +299,11 @@ export function nearestPointOnConnection(
   return best
 }
 
+// 分组包围盒：左右下留 24px；顶部要额外容纳节点标题（.node-head 向上 28px）
+// 和分组标签，否则两者会贴在一起。
+const GROUP_PAD = 24
+const GROUP_PAD_TOP = 56
+
 // 计算分组包围盒
 export function groupBBox(
   nodes: CanvasNode[],
@@ -314,12 +319,11 @@ export function groupBBox(
     maxX = Math.max(maxX, n.x + n.width)
     maxY = Math.max(maxY, n.y + n.height)
   })
-  const pad = 24
   return {
-    x: minX - pad,
-    y: minY - pad,
-    width: maxX - minX + pad * 2,
-    height: maxY - minY + pad * 2,
+    x: minX - GROUP_PAD,
+    y: minY - GROUP_PAD_TOP,
+    width: maxX - minX + GROUP_PAD * 2,
+    height: maxY - minY + GROUP_PAD_TOP + GROUP_PAD,
   }
 }
 
