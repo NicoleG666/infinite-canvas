@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>无限画布笔记</title>
+    <script>
+      // 站点首页默认展示产品介绍页；带查询参数（?demo=1 / ?app=1 / ?doc=… 等）时才进入画布
+      ;(function () {
+        var p = location.pathname
+        if ((p === '/' || p === '/index.html') && !location.search) {
+          location.replace('./demo.html')
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
