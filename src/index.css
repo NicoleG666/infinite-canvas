@@ -3744,6 +3744,18 @@ body,
   color-scheme: dark;
 }
 
+/* 下拉选项：原生弹层会继承半透明的玻璃背景，落到页面上就与背景同色，
+   这里给选项一个不透明的深色底和更亮的文字，保证可读 */
+.asset-select option {
+  background-color: #11141a;
+  color: var(--text-1);
+}
+
+.asset-select option:checked {
+  background-color: #1b2b3d;
+  color: var(--cyan);
+}
+
 .asset-tab:hover,
 .asset-icon-btn:hover,
 .asset-manage:hover,
