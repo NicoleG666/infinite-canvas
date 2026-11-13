@@ -209,7 +209,7 @@ export async function buildDemoDoc(id: string): Promise<CanvasDoc> {
     nodes: parts.nodes,
     connections: parts.connections,
     groups: parts.groups,
-    // 让示例内容在首屏完整可见
-    viewport: { x: -40, y: -20, scale: 0.8 },
+    // 让示例内容在首屏完整可见；顶部再下移一点，避开悬浮顶栏
+    viewport: { x: -40, y: 40, scale: 0.8 },
   }
 }

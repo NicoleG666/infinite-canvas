@@ -341,6 +341,8 @@ export default function App() {
     try {
       const rev = await putDoc(doc)
       await applyDoc({ ...doc, rev })
+      // 文档列表要同步刷新，否则顶栏读不到新文档名，会回落到「未命名画布」
+      await refreshDocs()
       markDemoSeeded()
     } catch (e) {
       setStorageError(describeStorageError(e))
