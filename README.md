@@ -2,7 +2,7 @@
 
 一个**本地优先**的无限画布笔记工具：把文字、图片、视频、音频、链接和代码放到一块可以无限平移、缩放的画布上，用连线和分组理清关系。无需注册，打开即用，数据保存在你自己的浏览器里。
 
-[**在线体验**](https://37jg3fszh5ayb212c06.traesite.cn) · [**产品介绍**](https://37jg3fszh5ayb212c06.traesite.cn/demo.html) · [**GitHub 仓库**](https://github.com/NicoleG666/infinite-canvas) · [本地运行](#本地运行) · [数据存在哪里](#数据存在哪里)
+[**在线体验**](https://37jg3fszh5ayb212c06.traesite.cn/?demo=1) · [**产品介绍**](https://37jg3fszh5ayb212c06.traesite.cn/demo.html) · [**GitHub 仓库**](https://github.com/NicoleG666/infinite-canvas) · [本地运行](#本地运行) · [数据存在哪里](#数据存在哪里)
 
 ![无限画布界面截图](public/screenshot.png)
 
@@ -20,9 +20,11 @@
 
 ## 在线体验
 
-<https://37jg3fszh5ayb212c06.traesite.cn>
+<https://37jg3fszh5ayb212c06.traesite.cn/?demo=1>
 
-打开后会自动创建一块空白画布，点击底部中间的 **+** 添加节点即可开始。首次访问还会自动生成一块「示例画布」，用文本、图片、代码、链接节点和分组把主要能力演示一遍；想随时回到它，可以打开 <https://37jg3fszh5ayb212c06.traesite.cn/?demo=1>。
+打开后直接进入「示例画布」：用文本、图片、代码、链接节点和分组把主要能力演示一遍，可以直接拖动、缩放、双击空白处新建节点来试。
+
+示例画布只在本地还没有画布时自动生成，之后打开会回到你自己的画布；想随时回到示例，用上面这个带 `?demo=1` 的链接即可。
 
 如果你想先看「这个工具是干什么的」，可以打开[产品介绍页](https://37jg3fszh5ayb212c06.traesite.cn/demo.html)，那里用一屏把核心用法、节点类型和数据存放位置讲清楚。
 
