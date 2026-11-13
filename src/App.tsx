@@ -33,6 +33,7 @@ import {
   parseImportFile,
 } from './utils/docIO'
 import { createUserProfile } from './utils/profile'
+import { buildDemoDoc, DEMO_DOC_NAME } from './utils/demoCanvas'
 import { decodeShareToken, readShareTokenFromLocation } from './utils/share'
 import type { CanvasDoc, CanvasDocMeta } from './types'
 
@@ -40,6 +41,25 @@ const newDocId = () => `doc_${Date.now().toString(36)}${Math.random().toString(3
 
 // 同一浏览器多标签页之间的文档变更通知
 const CHANNEL_NAME = 'infinite-canvas-docs'
+
+// 示例画布只播种一次：用户删掉后刷新不再重新出现
+const DEMO_SEEDED_KEY = 'infinite-canvas-demo-seeded'
+
+function demoAlreadySeeded(): boolean {
+  try {
+    return localStorage.getItem(DEMO_SEEDED_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function markDemoSeeded() {
+  try {
+    localStorage.setItem(DEMO_SEEDED_KEY, '1')
+  } catch {
+    // 隐私模式下 localStorage 不可用，忽略即可
+  }
+}
 
 type TrashMeta = CanvasDocMeta & { trashedAt: number }
 type DocConflict = { docId: string; kind: 'changed' | 'deleted' }
@@ -303,6 +323,29 @@ export default function App() {
     dirtyRef.current = true
     pendingContentRef.current = true
     await persist(id)
+  }
+
+  // 首次打开：创建「示例画布」，让访客一进来就能看到功能
+  const createDemoDoc = async () => {
+    const id = newDocId()
+    let doc: CanvasDoc | null = null
+    try {
+      doc = await buildDemoDoc(id)
+    } catch {
+      doc = null
+    }
+    if (!doc) {
+      await createDoc()
+      return
+    }
+    try {
+      const rev = await putDoc(doc)
+      await applyDoc({ ...doc, rev })
+      markDemoSeeded()
+    } catch (e) {
+      setStorageError(describeStorageError(e))
+      await createDoc()
+    }
   }
 
   // 删除文档：先移入回收站，可恢复
@@ -617,10 +660,25 @@ export default function App() {
           setToast('分享链接已损坏或不完整，已打开本地画布')
         }
 
+        // ?demo=1：从介绍页进入时直接打开示例画布（已有则复用）
+        if (new URLSearchParams(window.location.search).get('demo') === '1') {
+          const existing = metas.find((m) => m.name === DEMO_DOC_NAME)
+          if (existing) {
+            useCanvasStore.setState({ docId: null })
+            await openDoc(existing.id)
+          } else {
+            await createDemoDoc()
+          }
+          window.history.replaceState(null, '', window.location.pathname + window.location.hash)
+          return
+        }
+
         if (metas.length > 0) {
           useCanvasStore.setState({ docId: null })
           const ok = await openDoc(metas[0].id)
           if (!ok) await createDoc()
+        } else if (!demoAlreadySeeded()) {
+          await createDemoDoc()
         } else {
           await createDoc()
         }
